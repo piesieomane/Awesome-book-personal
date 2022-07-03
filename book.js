@@ -2,6 +2,7 @@ const submitBtn = document.querySelector(".submit-btn");
 const title = document.querySelector(".title");
 const author = document.querySelector(".author");
 const displayBooks = document.querySelector(".book-shelf");
+collection = [];
 
 class Book {
   constructor(title, author) {
@@ -10,8 +11,6 @@ class Book {
     this.id = Date.now();
   }
 
-  collection = JSON.parse(localStorage.getItem("form")) || [];
-
   addBook() {
     if (!title.value && !author.value) return;
     const book = {
@@ -19,8 +18,8 @@ class Book {
       title: this.title,
       id: this.id,
     };
-    this.collection.push(book);
-    localStorage.setItem("form", JSON.stringify(this.collection));
+    collection.push(book);
+    localStorage.setItem("form", JSON.stringify(collection));
     title.value = "";
     author.value = "";
   }
@@ -28,9 +27,10 @@ class Book {
 
 class Books extends Book {
   renderBooks = () => {
-    this.collection = JSON.parse(localStorage.getItem("form")) || [];
+    collection = JSON.parse(localStorage.getItem("form")) || [];
     displayBooks.innerHTML = "";
-    this.collection.forEach((oneBook) => {
+    collection.forEach((oneBook) => {
+      console.log(oneBook);
       const renderBook = document.createElement("div");
       renderBook.classList.add("class-book");
       const p = document.createElement("p");
@@ -48,18 +48,23 @@ class Books extends Book {
   };
 
   removeBook = (targetId) => {
-    const newArr = this.collection.filter((item) => item.id !== targetId);
-    this.collection.length = 0;
-    this.collection.push(...newArr);
-    localStorage.setItem("form", JSON.stringify(this.collection));
+    const newArr = collection.filter((item) => item.id !== targetId);
+    collection.length = 0;
+    console.log("dfvdcd", newArr);
+    collection.push(...newArr);
+    localStorage.setItem("form", JSON.stringify(collection));
+
     this.renderBooks();
   };
 }
 
 ////////////////////////////////////
 submitBtn.addEventListener("click", (e) => {
+  const title1 = title.value;
+  const author1 = author.value;
   e.preventDefault();
-  const newBook = new Books(title, author, Date.now());
+  const newBook = new Books(title1, author1, Date.now());
+  console.log(newBook);
   newBook.addBook();
   newBook.renderBooks();
 });
@@ -68,6 +73,7 @@ const mixcBook = new Books();
 displayBooks.addEventListener("click", (e) => {
   if (e.target.classList.contains("remove-btn")) {
     const targetId = parseInt(e.target.getAttribute("id"), 10);
+    console.log(targetId);
     mixcBook.removeBook(targetId);
   }
 });
